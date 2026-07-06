@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+neuro_swarm.db
+.neuro_key
+chat_neuroswarm_*.md
+.env
