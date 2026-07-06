@@ -1,0 +1,102 @@
+# @build: 2026-07-06.10-00-00 | id: DOC-005 | desc: Especificación OpenAPI 3.0 de la API unificada de Neuro-Swarm
+openapi: "3.0.0"
+info:
+  title: Neuro-Swarm Unified API
+  version: "5.0.0"
+  description: API unificada para generación de respuestas usando múltiples proveedores de IA
+servers:
+  - url: http://localhost:5000/api
+    description: Servidor local
+paths:
+  /generate:
+    post:
+      summary: Generar respuesta usando un agente o el enjambre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: integer
+                  description: ID del proyecto actual
+                prompt:
+                  type: string
+                  description: Texto del prompt del usuario
+                target_node_id:
+                  type: integer
+                  description: ID del agente (opcional, si no se usa el enjambre)
+                context_docs:
+                  type: string
+                  description: Documentos adicionales a inyectar en el contexto
+                auto_fix:
+                  type: boolean
+                  description: Activar autocorrección de código Python
+                  default: false
+              required:
+                - project_id
+                - prompt
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  response_text:
+                    type: string
+                  agent_name:
+                    type: string
+                  log_id:
+                    type: integer
+        '400':
+          description: Error en la solicitud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  error:
+                    type: string
+  /agents/verify:
+    get:
+      summary: Verificar estado de un agente
+      parameters:
+        - name: agent_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Estado del agente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agent_id:
+                    type: integer
+                  status:
+                    type: string
+                    enum: [active, error, thinking, inactive]
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
